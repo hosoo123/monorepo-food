@@ -2,13 +2,18 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import { categoryRouter } from "./routes/category.js";
+import { foodRouter } from "./routes/food.js";
+import { orderRouter } from "./routes/order.js";
+import { userRouter } from "./routes/user.js";
 const port = 8000;
 const app = express();
 app.use(express.json());
 app.use(cors());
 
 app.use("/category", categoryRouter);
-
+app.use("/food", foodRouter);
+app.use("/order", orderRouter);
+app.use("/user", userRouter);
 mongoose
   .connect(
     "mongodb+srv://monhjargalhosbat_db_user:TdT1PMlrHLfuZNkg@cluster0.1whp0q1.mongodb.net/",
