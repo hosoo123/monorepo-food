@@ -1,4 +1,4 @@
-import mongoose, { SchemaType } from "mongoose";
+import mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
 
@@ -12,9 +12,18 @@ const UserSchema = new Schema({
     enum: ["USER", "ADMIN"],
     default: "USER",
   },
-  orderedFoods: Schema.Types.ObjectId,
+
+  orderedFoods: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "food",
+    },
+  ],
   ttl: Date,
-  isVerified: Boolean,
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
   createdAt: { type: Date, required: true, default: Date.now },
   updatedAt: { type: Date, required: true, default: Date.now },
 });

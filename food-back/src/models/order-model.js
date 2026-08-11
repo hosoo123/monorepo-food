@@ -9,7 +9,7 @@ const foodOrderItem = new Schema({
 
 const OrderSchema = new Schema({
   user: { type: Schema.Types.ObjectId, ref: "user" },
-  totalPrice: String,
+  totalPrice: Number,
   foodOrderItems: [foodOrderItem],
   status: {
     type: String,
