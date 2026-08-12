@@ -4,18 +4,28 @@ import { Header } from "./_components/header";
 import { MenuContainer } from "./_components/menuContainer";
 import { Footer } from "./_components/footer";
 import { FoodModal } from "./_components/foodAddedModal";
+import { useEffect } from "react";
 
 const testFood = {
-    id: 1,
-    name: "Brie Crostini Appetizer",
-    price: 12.99,
-    description:
-      "Fluffy pancakes stacked with fruits, cream, syrup, and powdered sugar.",
-    image: "/image/Product Image.svg",
-  };
-//test asdasdas
+  id: 1,
+  name: "Brie Crostini Appetizer",
+  price: 12.99,
+  description:
+    "Fluffy pancakes stacked with fruits, cream, syrup, and powdered sugar.",
+  image: "/image/Product Image.svg",
+};
+
 
 export default function Home() {
+  const getFood = async () => {
+    const response = await fetch("http://localhost:8000/food");
+    const data = await response.json();
+    console.log(data);
+  };
+  useEffect(() => {
+    getFood();
+  }, []);
+
   return (
     <main className="w-full h-full mx-auto flex justify-center flex-col bg-[#404040]">
       <Header />
