@@ -8,7 +8,7 @@ export const Pagination = () => {
   const pages = [1, 2, 3, 4, 5];
 
   return (
-    <div className="flex items-center justify-center gap-1 mt-4">
+    <div className="flex items-center justify-end gap-1 mt-4">
       <button className="w-8 h-8 flex items-center justify-center rounded-full text-[#71717A] hover:bg-[#F4F4F5]">
         <ChevronLeft className="w-4 h-4" />
       </button>
