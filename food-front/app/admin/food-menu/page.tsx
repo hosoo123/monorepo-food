@@ -32,7 +32,6 @@ export default function FoodMenuPage() {
           title="Appetizers"
           count={6}
           dishes={Array(6).fill(appetizerDish)}
-          food={food}
         />
         <DishSection
           title="Salads"
