@@ -23,6 +23,7 @@ export const Sidebar = () => {
               alt="Logo"
               width={32}
               height={32}
+              className="w-8 h-8"
             />
           </div>
           <div>

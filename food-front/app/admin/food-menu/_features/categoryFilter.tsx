@@ -1,57 +1,60 @@
 "use client";
 
-import { useState } from "react";
-import { Plus } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { useState, useEffect } from "react";
+import { Plus, X } from "lucide-react";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 
-interface Category {
+interface CategoryType {
   categoryName: string;
-  // _id: String;
+  _id: string;
   count: number;
 }
 
-const categories: Category[] = [
-  { categoryName: "All Dishes", count: 112 },
-  { categoryName: "Appetizers", count: 6 },
-  { categoryName: "Salads", count: 3 },
-  { categoryName: "Pizzas", count: 5 },
-  { categoryName: "Lunch favorites", count: 5 },
-  { categoryName: "Main dishes", count: 5 },
-  { categoryName: "Fish & Sea foods", count: 5 },
-  { categoryName: "Brunch", count: 5 },
-  { categoryName: "Side dish", count: 5 },
-  { categoryName: "Desserts", count: 5 },
-  { categoryName: "Beverages", count: 5 },
-];
-
 export const CategoryFilter = () => {
   const [active, setActive] = useState("All Dishes");
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<CategoryType[]>([]);
   const [categoryName, setCategoryName] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   const getCategory = async () => {
     const res = await fetch("http://localhost:8000/category");
     const data = await res.json();
     setCategories(data);
   };
+
   const createCategory = async () => {
     const res = await fetch("http://localhost:8000/category", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ categoryName: "New Category", count: 0 }),
+      body: JSON.stringify({ categoryName: categoryName, count: 0 }),
     });
     const data = await res.json();
-    console.log(data);
+    getCategory();
+    setCategoryName("");
+    setIsDialogOpen(false);
   };
+  const deleteCategory = async (categoryId: string) => {
+    const res = await fetch("http://localhost:8000/category", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: categoryId, count: 0 }),
+    });
+    const data = await res.json();
+    getCategory();
+    setCategoryName("");
+    setIsDialogOpen(false);
+  };
+  useEffect(() => {
+    getCategory();
+  }, []);
 
-  console.log("category", categories);
+  const totalCount = categories.reduce((sum, cat) => sum + cat.count, 0);
+
+  const allCategories: CategoryType[] = [
+    { categoryName: "All Dishes", _id: "all", count: totalCount },
+    ...categories,
+  ];
 
   return (
     <div className="bg-white rounded-2xl p-5">
@@ -59,9 +62,9 @@ export const CategoryFilter = () => {
         Dishes category
       </h2>
       <div className="flex flex-wrap gap-2">
-        {categories.map((cat) => (
+        {allCategories.map((cat) => (
           <button
-            key={cat.categoryName}
+            key={cat._id}
             onClick={() => setActive(cat.categoryName)}
             className={`flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-medium border transition-colors ${
               active === cat.categoryName
@@ -70,7 +73,7 @@ export const CategoryFilter = () => {
             }`}
           >
             {cat.categoryName}
-            <span
+            {/* <span
               className={`text-[11px] px-1.5 py-0.5 rounded-full ${
                 active === cat.categoryName
                   ? "bg-[#EF4444] text-white"
@@ -78,28 +81,46 @@ export const CategoryFilter = () => {
               }`}
             >
               {cat.count}
-            </span>
+            </span> */}
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                deleteCategory(cat._id);
+              }}
+              className={`flex items-center gap-2 px-2 py-1 rounded-full text-[13px] font-medium border transition-colors ${
+                "All Dishes" === cat.categoryName ? "hidden" : ""
+              }`}
+            >
+              <X width={12} height={12} />
+            </div>
           </button>
         ))}
 
-        <Dialog>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger>
-            {" "}
-            <button
-              onClick={() => {
-                createCategory();
-              }}
-              className="w-9 h-9 flex items-center justify-center rounded-full bg-[#EF4444] text-white"
-            >
+            <div className="w-9 h-9 flex items-center justify-center rounded-full bg-[#EF4444] text-white cursor-pointer">
               <Plus className="w-4 h-4" />
-            </button>
+            </div>
           </DialogTrigger>
           <DialogContent>
-            <Input
-              placeholder="Category Name"
-              value={categoryName}
-              onChange={(e) => setCategoryName(e.target.value)}
-            />  
+            <div className="flex flex-col h-67 w-full justify-between gap-4">
+              <h1 className="text-lg font-bold">Add New Category</h1>
+              <div className="flex gap-3 flex-col font-bold">
+                {" "}
+                <p>Category name</p>
+                <Input
+                  placeholder="Category Name"
+                  value={categoryName}
+                  onChange={(e) => setCategoryName(e.target.value)}
+                />
+              </div>
+              <button
+                className="ml-auto border-[#EF4444] text-white bg-black rounded-full px-4 py-2 font-bold flex items-center justify-center"
+                onClick={createCategory}
+              >
+                Add category
+              </button>
+            </div>
           </DialogContent>
         </Dialog>
       </div>

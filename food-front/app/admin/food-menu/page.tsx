@@ -1,3 +1,5 @@
+"use client";
+import { useEffect, useState } from "react";
 import { Sidebar } from "../_features/Sidebar";
 import { CategoryFilter } from "./_features/categoryFilter";
 import { DishSection } from "./_features/dishSection";
@@ -11,6 +13,16 @@ const appetizerDish = {
 };
 
 export default function FoodMenuPage() {
+  const [food, setFood] = useState([]);
+  const getFood = async () => {
+    const response = await fetch("http://localhost:8000/food");
+    const data = await response.json();
+    setFood(data);
+    console.log("dada", data);
+  };
+  useEffect(() => {
+    getFood();
+  }, []);
   return (
     <div className="flex h-screen bg-[#FAFAFA]">
       <Sidebar />
@@ -20,6 +32,7 @@ export default function FoodMenuPage() {
           title="Appetizers"
           count={6}
           dishes={Array(6).fill(appetizerDish)}
+          food={food}
         />
         <DishSection
           title="Salads"

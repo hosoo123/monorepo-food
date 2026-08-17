@@ -1,4 +1,6 @@
+
 import { Pencil } from "lucide-react";
+
 
 interface DishCardProps {
   image: string;
@@ -7,7 +9,13 @@ interface DishCardProps {
   description: string;
 }
 
-export const DishCard = ({ image, name, price, description }: DishCardProps) => {
+export const DishCard = ({
+  image,
+  name,
+  price,
+  description,
+}: DishCardProps) => {
+
   return (
     <div className="rounded-xl overflow-hidden border border-[#F4F4F5]">
       <div className="relative h-[180px]">
@@ -21,9 +29,7 @@ export const DishCard = ({ image, name, price, description }: DishCardProps) => 
           <p className="text-[13px] font-semibold text-[#EF4444]">{name}</p>
           <p className="text-[13px] font-semibold text-black">{price}</p>
         </div>
-        <p className="text-[12px] text-[#71717A] leading-snug">
-          {description}
-        </p>
+        <p className="text-[12px] text-[#71717A] leading-snug">{description}</p>
       </div>
     </div>
   );

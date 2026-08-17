@@ -14,7 +14,7 @@ interface DishSectionProps {
   dishes: Dish[];
 }
 
-export const DishSection = ({ title, count, dishes }: DishSectionProps) => {
+export const DishSection = ({ title, count, dishes, }: DishSectionProps) => {
   return (
     <div className="bg-white rounded-2xl p-5">
       <h2 className="text-[15px] font-semibold text-black mb-4">
