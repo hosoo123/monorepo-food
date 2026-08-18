@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 interface CategoryType {
   categoryName: string;
   _id: string;
-  count: number;
+  foodCount: number;
 }
 
 export const CategoryFilter = () => {
@@ -20,7 +20,8 @@ export const CategoryFilter = () => {
   const getCategory = async () => {
     const res = await fetch("http://localhost:8000/category");
     const data = await res.json();
-    setCategories(data);
+    setCategories(data.categories);
+    console.log("datata", data);
   };
 
   const createCategory = async () => {
@@ -48,12 +49,15 @@ export const CategoryFilter = () => {
   useEffect(() => {
     getCategory();
   }, []);
-
-  const totalCount = categories.reduce((sum, cat) => sum + cat.count, 0);
+  const categoryList = Array.isArray(categories) ? categories : [];
+  const totalCount = (Array.isArray(categories) ? categories : []).reduce(
+    (sum, cat) => sum + cat.foodCount,
+    0,
+  );
 
   const allCategories: CategoryType[] = [
-    { categoryName: "All Dishes", _id: "all", count: totalCount },
-    ...categories,
+    { categoryName: "All Dishes", _id: "all", foodCount: totalCount },
+    ...categoryList,
   ];
 
   return (
@@ -73,15 +77,15 @@ export const CategoryFilter = () => {
             }`}
           >
             {cat.categoryName}
-            {/* <span
+            <span
               className={`text-[11px] px-1.5 py-0.5 rounded-full ${
                 active === cat.categoryName
                   ? "bg-[#EF4444] text-white"
                   : "bg-black text-white"
               }`}
             >
-              {cat.count}
-            </span> */}
+              {cat.foodCount}
+            </span>
             <div
               onClick={(e) => {
                 e.stopPropagation();
@@ -115,7 +119,7 @@ export const CategoryFilter = () => {
                 />
               </div>
               <button
-                className="ml-auto border-[#EF4444] text-white bg-black rounded-full px-4 py-2 font-bold flex items-center justify-center"
+                className="ml-auto border-[#EF4444] cursor-pointer text-white bg-black rounded-full px-4 py-2 font-bold flex items-center justify-center"
                 onClick={createCategory}
               >
                 Add category
