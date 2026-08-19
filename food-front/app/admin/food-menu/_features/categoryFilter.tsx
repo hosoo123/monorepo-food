@@ -4,12 +4,13 @@ import { useState, useEffect } from "react";
 import { Plus, X } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { AllDishes } from "./allDIshes";
 
-interface CategoryType {
+export type CategoryType = {
   categoryName: string;
   _id: string;
   foodCount: number;
-}
+};
 
 export const CategoryFilter = () => {
   const [active, setActive] = useState("All Dishes");
@@ -67,37 +68,13 @@ export const CategoryFilter = () => {
       </h2>
       <div className="flex flex-wrap gap-2">
         {allCategories.map((cat) => (
-          <button
+          <AllDishes
             key={cat._id}
-            onClick={() => setActive(cat.categoryName)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-medium border transition-colors ${
-              active === cat.categoryName
-                ? "border-[#EF4444] text-[#EF4444] bg-white"
-                : "border-[#E4E4E7] text-black bg-white hover:bg-[#FAFAFA]"
-            }`}
-          >
-            {cat.categoryName}
-            <span
-              className={`text-[11px] px-1.5 py-0.5 rounded-full ${
-                active === cat.categoryName
-                  ? "bg-[#EF4444] text-white"
-                  : "bg-black text-white"
-              }`}
-            >
-              {cat.foodCount}
-            </span>
-            <div
-              onClick={(e) => {
-                e.stopPropagation();
-                deleteCategory(cat._id);
-              }}
-              className={`flex items-center gap-2 px-2 py-1 rounded-full text-[13px] font-medium border transition-colors ${
-                "All Dishes" === cat.categoryName ? "hidden" : ""
-              }`}
-            >
-              <X width={12} height={12} />
-            </div>
-          </button>
+            cat={cat}
+            active={active}
+            setActive={setActive}
+            deleteCategory={deleteCategory}
+          />
         ))}
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
