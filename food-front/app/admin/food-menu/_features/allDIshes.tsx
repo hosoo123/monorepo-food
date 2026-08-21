@@ -12,6 +12,7 @@ export const AllDishes = ({
   setActive: (name: string) => void;
   deleteCategory: (id: string) => void;
 }) => {
+  
   return (
     <button
       key={cat._id}

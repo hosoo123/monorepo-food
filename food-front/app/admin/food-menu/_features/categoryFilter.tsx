@@ -17,12 +17,13 @@ export const CategoryFilter = () => {
   const [categories, setCategories] = useState<CategoryType[]>([]);
   const [categoryName, setCategoryName] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [totalFoods, setTotalFoods] = useState(0);
 
   const getCategory = async () => {
     const res = await fetch("http://localhost:8000/category");
     const data = await res.json();
     setCategories(data.categories);
-    console.log("datata", data);
+    setTotalFoods(data.totalFoods);
   };
 
   const createCategory = async () => {

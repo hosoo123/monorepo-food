@@ -14,6 +14,8 @@ app.use("/category", categoryRouter);
 app.use("/food", foodRouter);
 app.use("/order", orderRouter);
 app.use("/user", userRouter);
+app.use("/category", categoryRouter);
+
 mongoose
   .connect(
     "mongodb+srv://monhjargalhosbat_db_user:TdT1PMlrHLfuZNkg@cluster0.1whp0q1.mongodb.net/",
