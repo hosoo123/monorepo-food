@@ -1,0 +1,12 @@
+{
+  "name": "food-delivery-app",
+  "version": "1.0.0",
+  "scripts": {
+    "dev:front": "npm run dev --prefix food-front",
+    "dev:back": "npm run dev --prefix food-back",
+    "dev": "concurrently -k -p \"[{name}]\" -n \"FRONT,BACK\" -c \"cyan,yellow\" \"npm run dev:front\" \"npm run dev:back\""
+  },
+  "dependencies": {
+    "concurrently": "^10.0.5"
+  }
+}
