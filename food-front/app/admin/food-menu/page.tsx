@@ -2,10 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Sidebar } from "../_features/Sidebar";
-import {
-  CategoryFilter,
-  CategoryType,
-} from "./_features/categoryFilter";
+import { CategoryFilter, CategoryType } from "./_features/categoryFilter";
 import { DishSection } from "./_features/dishSection";
 
 export default function FoodMenuPage() {
@@ -13,7 +10,9 @@ export default function FoodMenuPage() {
 
   const getCategories = async () => {
     try {
-      const response = await fetch("http://localhost:8000/category");
+      const response = await fetch(
+        process.env.NEXT_PUBLIC_API_URL + "/category",
+      );
 
       if (!response.ok) {
         throw new Error("Category татахад алдаа гарлаа");
@@ -39,10 +38,7 @@ export default function FoodMenuPage() {
         <CategoryFilter />
 
         {categories.map((category) => (
-          <DishSection
-            key={category._id}
-            category={category}
-          />
+          <DishSection key={category._id} category={category} />
         ))}
       </main>
     </div>

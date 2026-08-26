@@ -5,22 +5,18 @@ import { categoryRouter } from "./routes/category.js";
 import { foodRouter } from "./routes/food.js";
 import { orderRouter } from "./routes/order.js";
 import { userRouter } from "./routes/user.js";
-const port = 8000;
+import "dotenv/config";
 const app = express();
 app.use(express.json());
 app.use(cors());
-
+const PORT = 8000;
 app.use("/category", categoryRouter);
 app.use("/food", foodRouter);
 app.use("/order", orderRouter);
 app.use("/user", userRouter);
 app.use("/category", categoryRouter);
 
-mongoose
-  .connect(
-    "mongodb+srv://monhjargalhosbat_db_user:TdT1PMlrHLfuZNkg@cluster0.1whp0q1.mongodb.net/",
-  )
-  .then(() => console.log("Connected"));
-app.listen(port, () => {
-  console.log(`server is running on http://localhost:${port}`);
+mongoose.connect(process.env.MONGODB_URL).then(() => console.log("Connected"));
+app.listen(PORT, () => {
+  console.log(`server is running on http://localhost:${PORT}`);
 });

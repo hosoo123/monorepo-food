@@ -10,10 +10,12 @@ interface AddDishCardProps {
 }
 
 export const AddDishCard = ({ categoryName }: AddDishCardProps) => {
+  const [foods, setFoods] = useState([]);
   const [foodName, setFoodName] = useState("");
   const [foodPrice, setFoodPrice] = useState("");
   const [ingredients, setIngredients] = useState("");
   const [foodImage, setFoodImage] = useState<File | null>(null);
+  const [uploadedImage, setUploadedImage] = useState<File | null>(null);
 
   return (
     <Dialog>
@@ -56,7 +58,7 @@ export const AddDishCard = ({ categoryName }: AddDishCardProps) => {
           </div>
           <div className="flex gap-3 flex-col font-bold">
             {" "}
-            <p>Category name</p>
+            <p>Ingredients</p>
             <Input
               placeholder="Category Name"
               value={categoryName}
@@ -78,10 +80,6 @@ export const AddDishCard = ({ categoryName }: AddDishCardProps) => {
                 <div className="text-center">
                   <p className="text-[15px] font-medium text-black">
                     {foodImage.name}
-                  </p>
-
-                  <p className="mt-1 text-[12px] text-[#71717A]">
-                    Зураг сонгогдлоо
                   </p>
                 </div>
               ) : (

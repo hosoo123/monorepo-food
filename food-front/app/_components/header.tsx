@@ -37,7 +37,6 @@ export const Header = () => {
 
         <div className="flex flex-row gap-2.5 items-center">
           <HeaderDialog />
-
           {/* Shopping Cart Button */}
           <button
             onClick={() => setIsCartOpen(true)}
@@ -45,9 +44,9 @@ export const Header = () => {
           >
             <ShoppingCart className="w-4 h-4 text-black" />
           </button>
-
           {/* User Profile Dropdown Component */}
-          <UserProfileModal isLoggedIn={false} /> {/* Одоогоор нэвтрээгүй төлөвөөр тохирууллаа */}
+          <UserProfileModal isLoggedIn={false} />{" "}
+          {/* Одоогоор нэвтрээгүй төлөвөөр тохирууллаа */}  
         </div>
       </header>
 
