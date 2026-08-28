@@ -7,8 +7,10 @@ import { CategoryType } from "./categoryFilter";
 
 export const DishSection = ({
   category,
+  getCategory,
 }: {
   category: CategoryType;
+  getCategory: () => void;
 }) => {
   const [foods, setFoods] = useState<FoodType[]>([]);
 
@@ -43,7 +45,7 @@ export const DishSection = ({
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        <AddDishCard categoryName={category.categoryName} />
+        <AddDishCard category={category} getCategory={getCategory} />
 
         {foods.map((food) => (
           <DishCard key={food._id} food={food} />

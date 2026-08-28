@@ -38,7 +38,11 @@ export default function FoodMenuPage() {
         <CategoryFilter />
 
         {categories.map((category) => (
-          <DishSection key={category._id} category={category} />
+          <DishSection
+            key={category._id}
+            category={category}
+            getCategory={() => getCategories()}
+          />
         ))}
       </main>
     </div>

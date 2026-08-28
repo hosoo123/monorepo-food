@@ -4,19 +4,63 @@ import { useState } from "react";
 import { ImageIcon, Plus } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { CategoryType } from "./categoryFilter";
 
-interface AddDishCardProps {
-  categoryName: string;
-}
+// interface AddDishCardProps {
+//   categoryName: string;
+// }
 
-export const AddDishCard = ({ categoryName }: AddDishCardProps) => {
+export const AddDishCard = ({
+  category,
+  getCategory,
+}: {
+  category: CategoryType;
+  getCategory: () => void;
+}) => {
   const [foods, setFoods] = useState([]);
   const [foodName, setFoodName] = useState("");
   const [foodPrice, setFoodPrice] = useState("");
-  const [ingredients, setIngredients] = useState("");
+  const [foodIngredients, setFoodIngredients] = useState("");
   const [foodImage, setFoodImage] = useState<File | null>(null);
-  const [uploadedImage, setUploadedImage] = useState<File | null>(null);
-
+  const [uploadedImage, setUploadedImage] = useState(false);
+  const getFoods = async () => {};
+  const createFood = async () => {
+    await fetch(process.env.NEXT_PUBLIC_API_URL + "/food", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        foodName: foodName,
+        image: foodImage,
+        ingredients: foodIngredients,
+        price: foodPrice,
+        category: category._id,
+      }),
+    });
+    getFoods();
+    getCategory();
+  };
+  const uploadCloudinary = async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append(
+      "upload_preset",
+      process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!,
+    );
+    try {
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      throw error;
+    }
+  };
   return (
     <Dialog>
       <DialogTrigger>
@@ -27,32 +71,34 @@ export const AddDishCard = ({ categoryName }: AddDishCardProps) => {
           <p className="text-[13px] text-black text-center px-4">
             Add new Dish to
             <br />
-            {categoryName}
+            {category.categoryName}
           </p>
         </div>
       </DialogTrigger>
       <DialogContent className="p-[24px]">
         <div className="flex flex-col h-[420px] justify-center pl-[8px] gap-4 w-[calc(100%-32px)]">
           <p className="text-[18px] flex font-semibold text-black text-center">
-            Add new Dish to {categoryName}
+            Add new Dish to {category.categoryName}
           </p>
           <div className="flex gap-4">
             <div className="flex gap-3 flex-col font-bold">
               {" "}
               <p>Food name</p>
               <Input
+                type="text"
                 placeholder="Type food name"
-                value={categoryName}
-                onChange={(e) => e.target.value}
+                value={foodName}
+                onChange={(e) => setFoodName(e.target.value)}
               />
             </div>
             <div className="flex gap-3 flex-col font-bold">
               {" "}
               <p>Food price</p>
               <Input
-                placeholder="Category Name"
-                value={categoryName}
-                onChange={(e) => e.target.value}
+                type="number"
+                placeholder="Enter price"
+                value={foodPrice}
+                onChange={(e) => setFoodPrice(e.target.value)}
               />
             </div>
           </div>
@@ -60,9 +106,11 @@ export const AddDishCard = ({ categoryName }: AddDishCardProps) => {
             {" "}
             <p>Ingredients</p>
             <Input
-              placeholder="Category Name"
-              value={categoryName}
-              onChange={(e) => e.target.value}
+
+              type="text"
+              placeholder="List ingredients"
+              value={foodIngredients}
+              onChange={(e) => setFoodIngredients(e.target.value)}
             />
           </div>
           <div className="flex flex-col gap-2">
