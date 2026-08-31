@@ -3,17 +3,9 @@
 import { Header } from "./_components/header";
 import { MenuContainer } from "./_components/menuContainer";
 import { Footer } from "./_components/footer";
-import { FoodModal } from "./_components/foodAddedModal";
+
 import { useEffect } from "react";
 
-const testFood = {
-  id: 1,
-  name: "Brie Crostini Appetizer",
-  price: 12.99,
-  description:
-    "Fluffy pancakes stacked with fruits, cream, syrup, and powdered sugar.",
-  image: "/image/Product Image.svg",
-};
 
 
 export default function Home() {
@@ -35,7 +27,7 @@ export default function Home() {
           alt="heroImg"
           className="w-full h-auto max-h-142.5 object-cover"
         />
-        {/* <FoodModal item={testFood} onClose={() => {}} /> */}
+        
         <div className="p-22">
           <MenuContainer category="Appetizers" />
           <MenuContainer category="Salads" />
