@@ -17,7 +17,7 @@ export const DishSection = ({
   const getFoods = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8000/category/${category._id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/category/${category._id}`,
       );
 
       if (!response.ok) {
@@ -48,7 +48,7 @@ export const DishSection = ({
         <AddDishCard category={category} getCategory={getCategory} />
 
         {foods.map((food) => (
-          <DishCard key={food._id} food={food} />
+          <DishCard key={food._id} food={food} onChanged={getFoods} />
         ))}
       </div>
     </div>

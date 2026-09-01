@@ -5,6 +5,7 @@ import { Plus, X } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { AllDishes } from "./allDIshes";
+import { toast } from "sonner";
 
 export type CategoryType = {
   categoryName: string;
@@ -27,26 +28,55 @@ export const CategoryFilter = () => {
   };
 
   const createCategory = async () => {
-    const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/category", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ categoryName: categoryName, count: 0 }),
-    });
-    const data = await res.json();
-    getCategory();
-    setCategoryName("");
-    setIsDialogOpen(false);
+    try {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/category", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          categoryName,
+          count: 0,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Category нэмэхэд алдаа гарлаа");
+      }
+
+      await res.json();
+      await getCategory();
+
+      toast.success("New Category is being added to the menu");
+
+      setCategoryName("");
+      setIsDialogOpen(false);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to add new category");
+    }
   };
   const deleteCategory = async (categoryId: string) => {
-    const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/category", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: categoryId, count: 0 }),
-    });
-    const data = await res.json();
-    getCategory();
-    setCategoryName("");
-    setIsDialogOpen(false);
+    try {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/category", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: categoryId, count: 0 }),
+      });
+      if (!res.ok) {
+        throw new Error("Failed to delete category");
+      }
+
+      await res.json();
+      getCategory();
+      toast.success("Category has been deleted");
+
+      setCategoryName("");
+      setIsDialogOpen(false);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to delete category");
+    }
   };
   useEffect(() => {
     getCategory();

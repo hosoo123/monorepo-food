@@ -1,7 +1,7 @@
 "use client";
-
+import { toast } from "sonner";
 import { useState } from "react";
-import { Divide, ImageIcon, Plus } from "lucide-react";
+import { ImageIcon, Plus } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { CategoryType } from "./categoryFilter";
@@ -9,32 +9,53 @@ import { CategoryType } from "./categoryFilter";
 export const AddDishCard = ({
   category,
   getCategory,
+  getFoods,
 }: {
   category: CategoryType;
-  getCategory: () => void;
+  getCategory: () => Promise<void>;
+  getFoods: () => Promise<void>;
 }) => {
-  const [foods, setFoods] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [creating, setCreating] = useState(false);
   const [foodName, setFoodName] = useState("");
   const [foodPrice, setFoodPrice] = useState("");
   const [foodIngredients, setFoodIngredients] = useState("");
   const [foodImage, setFoodImage] = useState("");
-  const [uploadedImage, setUploadedImage] = useState("");
   const [uploading, setUploading] = useState(false);
-  const getFoods = async () => {};
+
   const createFood = async () => {
-    await fetch(process.env.NEXT_PUBLIC_API_URL + "/food", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        foodName: foodName,
-        image: foodImage,
-        ingredients: foodIngredients,
-        price: foodPrice,
-        category: category._id,
-      }),
-    });
-    getFoods();
-    getCategory();
+    try {
+      const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/food", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          foodName,
+          image: foodImage,
+          ingredients: foodIngredients,
+          price: Number(foodPrice),
+          category: category._id,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create food");
+      }
+
+      await response.json();
+      await getCategory();
+      await getFoods();
+      toast.success("Dish has been added");
+
+      setFoodName("");
+      setFoodPrice("");
+      setFoodIngredients("");
+      setFoodImage("");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to add dish");
+    }
   };
   const uploadCloudinary = async (file: File) => {
     const formData = new FormData();
@@ -162,7 +183,7 @@ export const AddDishCard = ({
                 <input
                   type="file"
                   id="foodImage"
-                  accept="image/png,image/jpeg,image/wbep"
+                  accept="image/png,image/jpeg,image/webp"
                   className="hidden"
                   onChange={handleImageChange}
                 />
