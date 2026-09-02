@@ -10,7 +10,7 @@ export const DishSection = ({
   getCategory,
 }: {
   category: CategoryType;
-  getCategory: () => void;
+  getCategory: () => Promise<void>;
 }) => {
   const [foods, setFoods] = useState<FoodType[]>([]);
 
@@ -21,7 +21,7 @@ export const DishSection = ({
       );
 
       if (!response.ok) {
-        throw new Error("Food татахад алдаа гарлаа");
+        throw new Error("Food tatahad aldaa garlaa");
       }
 
       const data = await response.json();
@@ -45,7 +45,11 @@ export const DishSection = ({
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        <AddDishCard category={category} getCategory={getCategory} />
+        <AddDishCard
+          category={category}
+          getFoods={getFoods}
+          getCategory={getCategory}
+        />
 
         {foods.map((food) => (
           <DishCard key={food._id} food={food} onChanged={getFoods} />

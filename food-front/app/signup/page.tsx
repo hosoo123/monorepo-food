@@ -14,6 +14,14 @@ export default function SignUpPage() {
     if (currentStep < 2) setCurrentStep(currentStep + 1);
   };
 
+
+  const handleSignUp = async () => {
+    const response = await fetch("/api/signup", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+    });
+  };
+
   return (
     <div className="flex h-screen w-full">
       <div
