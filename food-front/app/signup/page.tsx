@@ -15,12 +15,12 @@ export default function SignUpPage() {
   };
 
 
-  const handleSignUp = async () => {
-    const response = await fetch("/api/signup", {
-      method: "POST",
-      body: JSON.stringify({ email, password }),
-    });
-  };
+  // const handleSignUp = async () => {
+  //   const response = await fetch("/api/signup", {
+  //     method: "POST",
+  //     body: JSON.stringify({ email, password }),
+  //   });
+  // };
 
   return (
     <div className="flex h-screen w-full">

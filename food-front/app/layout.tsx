@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
-import { CircleCheck, CircleX } from "lucide-react";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -23,20 +22,7 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable}  h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         {children}
-        <Toaster
-          position="top-center"
-          icons={{
-            success: <CircleCheck className="h-5 w-5 text-white-500" />,
-            error: <CircleX className="h-5 w-5 text-white-500" />,
-          }}
-          toastOptions={{
-            style: {
-              background: "#18181B",
-              color: "white",
-              border: "1px solid #27272A",
-            },
-          }}
-        />
+        <Toaster />
       </body>
     </html>
   );

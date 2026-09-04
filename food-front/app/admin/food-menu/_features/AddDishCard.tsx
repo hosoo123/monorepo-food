@@ -24,6 +24,12 @@ export const AddDishCard = ({
   const [uploading, setUploading] = useState(false);
 
   const createFood = async () => {
+    if (uploading) return;
+    if (!foodName || !foodPrice || !foodIngredients || !foodImage) {
+      toast.error("Бүх талбарыг бөглөнө үү");
+      return;
+    }
+
     try {
       const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/food", {
         method: "POST",
@@ -217,10 +223,12 @@ export const AddDishCard = ({
             )}
           </div>
           <button
-            className="ml-auto border-[#EF4444] cursor-pointer text-white bg-black rounded-full px-4 py-2 font-bold flex items-center justify-center"
+            type="button"
+            disabled={uploading}
+            className="ml-auto border-[#EF4444] text-white bg-black rounded-full px-4 py-2 font-bold flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             onClick={createFood}
           >
-            Add Dish
+            {uploading ? "Uploading..." : "Add Dish"}
           </button>
         </div>
       </DialogContent>
