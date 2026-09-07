@@ -36,18 +36,21 @@ export function HeaderDialog() {
       }}
     >
       <DialogTrigger>
-        <div className="p-3 bg-white gap-1 text-black rounded-lg w-62.75 h-9 items-center flex text-xs justify-center">
+        <div className="p-2 sm:p-3 bg-white gap-1 text-black rounded-lg max-w-[42vw] sm:max-w-none sm:w-62.75 h-8 sm:h-9 items-center flex text-[10px] sm:text-xs justify-center">
           <img
             src="/icons/location.svg"
             alt="location"
             width={13.33}
             height={16.67}
+            className="shrink-0"
           />
-          <p className="text-[#EF4444] shrink-0">Delivery address:</p>
-          <p className="text-[#71717A] truncate max-w-28">
+          <p className="text-[#EF4444] shrink-0 hidden sm:block">
+            Delivery address:
+          </p>
+          <p className="text-[#71717A] truncate max-w-20 sm:max-w-28">
             {address || "Add Location"}
           </p>
-          <ChevronRight className="text-xs shrink-0" />
+          <ChevronRight className="text-xs shrink-0 hidden sm:block" />
         </div>
       </DialogTrigger>
 

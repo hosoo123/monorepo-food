@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { CategoryType } from "./categoryFilter";
 import { apiUrl } from "@/lib/api";
+import { LoadingSpinner } from "@/app/_components/LoadingSpinner";
 
 export const AddDishCard = ({
   category,
@@ -25,13 +26,14 @@ export const AddDishCard = ({
   const [uploading, setUploading] = useState(false);
 
   const createFood = async () => {
-    if (uploading) return;
+    if (uploading || creating) return;
     if (!foodName || !foodPrice || !foodIngredients || !foodImage) {
       toast.error("Бүх талбарыг бөглөнө үү");
       return;
     }
 
     try {
+      setCreating(true);
       const response = await fetch(apiUrl("/food"), {
         method: "POST",
         headers: {
@@ -62,6 +64,8 @@ export const AddDishCard = ({
     } catch (error) {
       console.error(error);
       toast.error("Failed to add dish");
+    } finally {
+      setCreating(false);
     }
   };
   const uploadCloudinary = async (file: File) => {
@@ -225,11 +229,14 @@ export const AddDishCard = ({
           </div>
           <button
             type="button"
-            disabled={uploading}
-            className="ml-auto border-[#EF4444] text-white bg-black rounded-full px-4 py-2 font-bold flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            disabled={uploading || creating}
+            className="ml-auto border-[#EF4444] text-white bg-black rounded-full px-4 py-2 font-bold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             onClick={createFood}
           >
-            {uploading ? "Uploading..." : "Add Dish"}
+            {(uploading || creating) && (
+              <LoadingSpinner className="h-4 w-4" />
+            )}
+            {uploading ? "Uploading..." : creating ? "Adding..." : "Add Dish"}
           </button>
         </div>
       </DialogContent>

@@ -23,28 +23,30 @@ export const MenuContainerCard = ({
 
   return (
     <>
-      <div className="w-99.25 h-85.5 p-4 bg-white rounded-lg shadow-md">
+      <div className="w-full h-auto p-3 sm:p-4 bg-white rounded-lg shadow-md">
         <div className="relative">
           <img
             src={image || "/image/Product Image.svg"}
             alt="menuCard"
-            className="w-full h-52.5 object-cover overflow-hidden rounded-lg"
+            className="w-full h-44 sm:h-52.5 object-cover overflow-hidden rounded-lg"
           />
           <div
             onClick={() => setIsModalOpen(true)}
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-white overflow-hidden right-5.5 bottom-5 text-black absolute cursor-pointer"
+            className="w-10 h-10 flex items-center justify-center rounded-full bg-white overflow-hidden right-3 bottom-3 sm:right-5.5 sm:bottom-5 text-black absolute cursor-pointer"
           >
             <Plus className="w-4 h-4 text-red-500" />
           </div>
         </div>
-        <div className="p-4 flex flex-col gap-2">
-          <h3 className="text-lg font-bold justify-between flex text-[#EF4444]">
-            {name}{" "}
-            <span className="text-xl font-bold text-black">
+        <div className="pt-3 sm:p-4 flex flex-col gap-2">
+          <h3 className="text-base sm:text-lg font-bold justify-between flex gap-2 text-[#EF4444]">
+            <span className="truncate">{name}</span>
+            <span className="text-lg sm:text-xl font-bold text-black shrink-0">
               ${price.toFixed(2)}
             </span>
           </h3>
-          <p className="text-gray-500">{description}</p>
+          <p className="text-sm sm:text-base text-gray-500 line-clamp-2">
+            {description}
+          </p>
         </div>
       </div>
       {isModalOpen && (

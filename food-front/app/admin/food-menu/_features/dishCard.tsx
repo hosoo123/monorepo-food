@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { apiUrl } from "@/lib/api";
+import { LoadingSpinner } from "@/app/_components/LoadingSpinner";
 
 type FoodCategory =
   | string
@@ -254,8 +255,9 @@ export const DishCard = ({ food, onChanged }: DishCardProps) => {
           <button
             disabled={loading}
             onClick={updateFood}
-            className="rounded-xl bg-[#18181B] px-8 py-5 text-[18px] font-semibold text-white transition hover:bg-black disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-xl bg-[#18181B] px-8 py-5 text-[18px] font-semibold text-white transition hover:bg-black disabled:cursor-not-allowed disabled:opacity-50 flex items-center gap-2"
           >
+            {loading && <LoadingSpinner className="h-5 w-5" />}
             {loading ? "Saving..." : "Save changes"}
           </button>
         </div>

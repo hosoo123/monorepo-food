@@ -3,10 +3,7 @@
 import { Header } from "./_components/header";
 import { MenuContainer } from "./_components/menuContainer";
 import { Footer } from "./_components/footer";
-
 import { useEffect } from "react";
-
-
 
 export default function Home() {
   const getFood = async () => {
@@ -25,10 +22,10 @@ export default function Home() {
         <img
           src="/image/BG.svg"
           alt="heroImg"
-          className="w-full h-auto max-h-142.5 object-cover"
+          className="w-full h-auto max-h-60 sm:max-h-96 lg:max-h-142.5 object-cover"
         />
-        
-        <div className="p-22">
+
+        <div className="px-4 py-8 sm:px-8 sm:py-12 lg:p-22">
           <MenuContainer category="Appetizers" />
           <MenuContainer category="Salads" />
           <MenuContainer category="Lunch favorites" />

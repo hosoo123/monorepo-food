@@ -33,7 +33,7 @@ export const OrderDetailSheet = ({
     <>
       <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose} />
 
-      <div className="fixed right-0 top-0 h-full w-[535px] max-w-full bg-[#27272A] text-white z-50 p-6 shadow-2xl flex flex-col gap-6 overflow-y-auto rounded-l-3xl">
+      <div className="fixed inset-0 sm:inset-y-0 sm:right-0 sm:left-auto sm:top-0 h-full w-full sm:w-[535px] bg-[#27272A] text-white z-50 p-4 sm:p-6 shadow-2xl flex flex-col gap-4 sm:gap-6 overflow-y-auto sm:rounded-l-3xl">
         <div className="flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2">
             <ShoppingCart className="w-5 h-5 text-white" />
@@ -96,7 +96,7 @@ export const OrderDetailSheet = ({
                       <img
                         src={item.image || "/image/Product Image.svg"}
                         alt={item.name}
-                        className="w-[90px] h-[90px] rounded-xl object-cover shrink-0"
+                        className="w-16 h-16 sm:w-[90px] sm:h-[90px] rounded-xl object-cover shrink-0"
                       />
 
                       <div className="flex-1 min-w-0">

@@ -1,23 +1,26 @@
 import { X } from "lucide-react";
 import { CategoryType } from "./categoryFilter";
+import { LoadingSpinner } from "@/app/_components/LoadingSpinner";
 
 export const AllDishes = ({
   cat,
   active,
   setActive,
   deleteCategory,
+  deleting = false,
 }: {
   cat: CategoryType;
   active: string;
   setActive: (name: string) => void;
   deleteCategory: (id: string) => void;
+  deleting?: boolean;
 }) => {
-  
   return (
     <button
       key={cat._id}
       onClick={() => setActive(cat.categoryName)}
-      className={`flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-medium border transition-colors ${
+      disabled={deleting}
+      className={`flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-medium border transition-colors disabled:opacity-60 ${
         active === cat.categoryName
           ? "border-[#EF4444] text-[#EF4444] bg-white"
           : "border-[#E4E4E7] text-black bg-white hover:bg-[#FAFAFA]"
@@ -36,13 +39,17 @@ export const AllDishes = ({
       <div
         onClick={(e) => {
           e.stopPropagation();
-          deleteCategory(cat._id);
+          if (!deleting) deleteCategory(cat._id);
         }}
         className={`flex items-center gap-2 px-2 py-1 rounded-full text-[13px] font-medium border transition-colors ${
-          "All Dishes" === cat.categoryName ? "hidden" : ""
+          cat.categoryName === "All Dishes" ? "hidden" : ""
         }`}
       >
-        <X width={12} height={12} />
+        {deleting ? (
+          <LoadingSpinner className="h-3 w-3" />
+        ) : (
+          <X width={12} height={12} />
+        )}
       </div>
     </button>
   );

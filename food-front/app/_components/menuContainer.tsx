@@ -108,8 +108,10 @@ export const MenuContainer = ({ category }: Props) => {
   const cards = allCards[category] || [];
   return (
     <section className="w-full mx-auto flex flex-col justify-center">
-      <h2 className="text-2xl font-bold text-white pt-13.5">{category}</h2>
-      <div className="flex flex-wrap gap-4 mt-4">
+      <h2 className="text-xl sm:text-2xl font-bold text-white pt-8 sm:pt-13.5">
+        {category}
+      </h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mt-4">
         {cards.map((item) => (
           <MenuContainerCard
             key={`${category}-${item.id}`}
