@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { HeaderDialog } from "./headerDialog";
 import { ShoppingCart } from "lucide-react"; // User icon-ийг UserProfileDropdown-д ашигласан тул эндээс хаслаа
-import { CartToast } from "./alertAdded-Cart";
 import { OrderDetailSheet } from "./OrderDetailSheet";
 import { UserProfileModal } from "./UserProfileDropdown";
 
@@ -33,8 +32,6 @@ export const Header = () => {
           </div>
         </Link>
 
-        <CartToast />
-
         <div className="flex flex-row gap-2.5 items-center">
           <HeaderDialog />
           {/* Shopping Cart Button */}
@@ -46,7 +43,7 @@ export const Header = () => {
           </button>
           {/* User Profile Dropdown Component */}
           <UserProfileModal isLoggedIn={false} />{" "}
-          {/* Одоогоор нэвтрээгүй төлөвөөр тохирууллаа */}  
+          {/* Одоогоор нэвтрээгүй төлөвөөр тохирууллаа */}
         </div>
       </header>
 

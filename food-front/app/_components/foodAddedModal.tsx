@@ -1,6 +1,9 @@
 "use client";
+
 import { useState } from "react";
+import { toast } from "sonner";
 import { CardItem } from "./menuContainer";
+import { useCart } from "./cart-context";
 
 type ModalProps = {
   item: CardItem;
@@ -9,6 +12,7 @@ type ModalProps = {
 
 export const FoodModal = ({ item, onClose }: ModalProps) => {
   const [quantity, setQuantity] = useState(1);
+  const { addItem } = useCart();
 
   const handleDecrease = () => {
     if (quantity > 1) setQuantity(quantity - 1);
@@ -20,10 +24,24 @@ export const FoodModal = ({ item, onClose }: ModalProps) => {
 
   const totalPrice = (item.price * quantity).toFixed(2);
 
+  const handleAddToCart = () => {
+    addItem(
+      {
+        id: `${item.id}-${item.name}`,
+        name: item.name,
+        price: item.price,
+        image: item.image,
+        description: item.description,
+      },
+      quantity,
+    );
+    toast.success(`${item.name} (${quantity}ш) сагсанд нэмэгдлээ!`);
+    onClose();
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
       <div className="relative w-full max-w-[650px] bg-white rounded-3xl p-6 shadow-2xl flex flex-col sm:flex-row gap-6 animate-in fade-in zoom-in-95 duration-200">
-        {/* X button */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-100 text-sm font-semibold transition z-10"
@@ -31,7 +49,6 @@ export const FoodModal = ({ item, onClose }: ModalProps) => {
           ✕
         </button>
 
-        {/* zuun heseg: zurag */}
         <div className="w-full sm:w-1/2 h-[240px] sm:h-auto">
           <img
             src={item.image || "/image/Product Image.svg"}
@@ -40,7 +57,6 @@ export const FoodModal = ({ item, onClose }: ModalProps) => {
           />
         </div>
 
-        {/* baruun heseg : medeelel */}
         <div className="w-full sm:w-1/2 flex flex-col justify-between gap-4">
           <div>
             <h2 className="text-2xl font-bold text-[#EF4444]">{item.name}</h2>
@@ -48,14 +64,12 @@ export const FoodModal = ({ item, onClose }: ModalProps) => {
           </div>
 
           <div className="flex flex-col gap-4">
-            {/* une too shirheg */}
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-400 font-medium">Total price</p>
                 <p className="text-2xl font-bold text-black">${totalPrice}</p>
               </div>
 
-              {/* + - buttons */}
               <div className="flex items-center gap-3">
                 <button
                   onClick={handleDecrease}
@@ -73,13 +87,8 @@ export const FoodModal = ({ item, onClose }: ModalProps) => {
               </div>
             </div>
 
-            {/* sagsand hiih towch */}
             <button
-              onClick={() => {
-                // ireeduid cart API ruu data heseg ilgeeh
-                alert(`${item.name} (${quantity}ш) сагсанд нэмэгдлээ!`);
-                onClose();
-              }}
+              onClick={handleAddToCart}
               className="w-full py-3.5 bg-black text-white font-medium rounded-2xl hover:bg-gray-800 transition shadow-lg active:scale-[0.98]"
             >
               Add to cart

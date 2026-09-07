@@ -112,10 +112,12 @@ export const MenuContainer = ({ category }: Props) => {
       <div className="flex flex-wrap gap-4 mt-4">
         {cards.map((item) => (
           <MenuContainerCard
-            key={item.id}
+            key={`${category}-${item.id}`}
+            id={item.id}
             name={item.name}
             price={item.price}
             description={item.description}
+            image={item.image}
           />
         ))}
       </div>

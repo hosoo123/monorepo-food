@@ -1,4 +1,5 @@
 "use client";
+
 import { Plus } from "lucide-react";
 import { FoodModal } from "./foodAddedModal";
 import { useState } from "react";
@@ -7,25 +8,25 @@ type Props = {
   name: string;
   price: number;
   description: string;
-  AddedFoodCart: () => void;
   image?: string;
   id: number;
 };
+
 export const MenuContainerCard = ({
   name,
   id,
   price,
-  AddedFoodCart,
   description,
   image,
 }: Props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <>
       <div className="w-99.25 h-85.5 p-4 bg-white rounded-lg shadow-md">
         <div className="relative">
           <img
-            src="/image/Product Image.svg"
+            src={image || "/image/Product Image.svg"}
             alt="menuCard"
             className="w-full h-52.5 object-cover overflow-hidden rounded-lg"
           />
