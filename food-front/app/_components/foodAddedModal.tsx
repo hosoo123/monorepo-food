@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { CardItem } from "./menuContainer";
 import { useCart } from "./cart-context";
+import { FoodImage } from "./FoodImage";
 
 type ModalProps = {
   item: CardItem;
@@ -27,7 +28,7 @@ export const FoodModal = ({ item, onClose }: ModalProps) => {
   const handleAddToCart = () => {
     addItem(
       {
-        id: `${item.id}-${item.name}`,
+        id: item.id,
         name: item.name,
         price: item.price,
         image: item.image,
@@ -50,8 +51,8 @@ export const FoodModal = ({ item, onClose }: ModalProps) => {
         </button>
 
         <div className="w-full sm:w-1/2 h-[240px] sm:h-auto">
-          <img
-            src={item.image || "/image/Product Image.svg"}
+          <FoodImage
+            src={item.image}
             alt={item.name}
             className="w-full h-full object-cover rounded-2xl"
           />

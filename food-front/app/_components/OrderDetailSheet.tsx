@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ShoppingCart, X } from "lucide-react";
 import { useCart } from "./cart-context";
+import { FoodImage } from "./FoodImage";
 
 const SHIPPING_FEE = 0.99;
 
@@ -93,8 +94,8 @@ export const OrderDetailSheet = ({
                 {items.map((item) => (
                   <div key={item.id} className="py-4 first:pt-0 last:pb-4">
                     <div className="flex gap-3">
-                      <img
-                        src={item.image || "/image/Product Image.svg"}
+                      <FoodImage
+                        src={item.image}
                         alt={item.name}
                         className="w-16 h-16 sm:w-[90px] sm:h-[90px] rounded-xl object-cover shrink-0"
                       />

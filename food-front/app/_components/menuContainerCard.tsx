@@ -3,13 +3,14 @@
 import { Plus } from "lucide-react";
 import { FoodModal } from "./foodAddedModal";
 import { useState } from "react";
+import { FoodImage } from "./FoodImage";
 
 type Props = {
   name: string;
   price: number;
   description: string;
   image?: string;
-  id: number;
+  id: string;
 };
 
 export const MenuContainerCard = ({
@@ -25,9 +26,9 @@ export const MenuContainerCard = ({
     <>
       <div className="w-full h-auto p-3 sm:p-4 bg-white rounded-lg shadow-md">
         <div className="relative">
-          <img
-            src={image || "/image/Product Image.svg"}
-            alt="menuCard"
+          <FoodImage
+            src={image}
+            alt={name}
             className="w-full h-44 sm:h-52.5 object-cover overflow-hidden rounded-lg"
           />
           <div

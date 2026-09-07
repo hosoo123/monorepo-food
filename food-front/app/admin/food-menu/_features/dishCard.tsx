@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { apiUrl } from "@/lib/api";
 import { LoadingSpinner } from "@/app/_components/LoadingSpinner";
+import { FoodImage } from "@/app/_components/FoodImage";
 
 type FoodCategory =
   | string
@@ -116,17 +117,11 @@ export const DishCard = ({ food, onChanged }: DishCardProps) => {
     <Dialog open={open} onOpenChange={setOpen}>
       <div className="overflow-hidden rounded-xl border border-[#F4F4F5] shadow-md">
         <div className="relative h-[180px]">
-          {food.image ? (
-            <img
-              src={food.image}
-              alt={food.foodName}
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center bg-gray-100 text-sm text-gray-500">
-              No image
-            </div>
-          )}
+          <FoodImage
+            src={food.image}
+            alt={food.foodName}
+            className="h-full w-full object-cover"
+          />
 
           <DialogTrigger>
             <div className="absolute right-3 top-3 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white shadow-sm transition hover:scale-105">
