@@ -4,15 +4,14 @@ import { useEffect, useState } from "react";
 import { Sidebar } from "../_features/Sidebar";
 import { CategoryFilter, CategoryType } from "./_features/categoryFilter";
 import { DishSection } from "./_features/dishSection";
+import { apiUrl } from "@/lib/api";
 
 export default function FoodMenuPage() {
   const [categories, setCategories] = useState<CategoryType[]>([]);
 
   const getCategories = async () => {
     try {
-      const response = await fetch(
-        process.env.NEXT_PUBLIC_API_URL + "/category",
-      );
+      const response = await fetch(apiUrl("/category"));
 
       if (!response.ok) {
         throw new Error("Category татахад алдаа гарлаа");

@@ -5,6 +5,7 @@ import { Pencil, Trash2, X } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { apiUrl } from "@/lib/api";
 
 type FoodCategory =
   | string
@@ -47,7 +48,7 @@ export const DishCard = ({ food, onChanged }: DishCardProps) => {
     try {
       setLoading(true);
 
-      const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/food", {
+      const response = await fetch(apiUrl("/food"), {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -83,7 +84,7 @@ export const DishCard = ({ food, onChanged }: DishCardProps) => {
     try {
       setLoading(true);
 
-      const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/food", {
+      const response = await fetch(apiUrl("/food"), {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

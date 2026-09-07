@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { AllDishes } from "./allDIshes";
 import { toast } from "sonner";
+import { apiUrl } from "@/lib/api";
 
 export type CategoryType = {
   categoryName: string;
@@ -21,7 +22,7 @@ export const CategoryFilter = () => {
   const [totalFoods, setTotalFoods] = useState(0);
 
   const getCategory = async () => {
-    const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/category");
+    const res = await fetch(apiUrl("/category"));
     const data = await res.json();
     setCategories(data.categories);
     setTotalFoods(data.totalFoods);
@@ -29,7 +30,7 @@ export const CategoryFilter = () => {
 
   const createCategory = async () => {
     try {
-      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/category", {
+      const res = await fetch(apiUrl("/category"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -58,7 +59,7 @@ export const CategoryFilter = () => {
   };
   const deleteCategory = async (categoryId: string) => {
     try {
-      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/category", {
+      const res = await fetch(apiUrl("/category"), {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: categoryId, count: 0 }),

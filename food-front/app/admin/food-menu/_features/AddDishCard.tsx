@@ -5,6 +5,7 @@ import { ImageIcon, Plus } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { CategoryType } from "./categoryFilter";
+import { apiUrl } from "@/lib/api";
 
 export const AddDishCard = ({
   category,
@@ -31,7 +32,7 @@ export const AddDishCard = ({
     }
 
     try {
-      const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/food", {
+      const response = await fetch(apiUrl("/food"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

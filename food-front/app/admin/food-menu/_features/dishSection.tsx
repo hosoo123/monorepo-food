@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { DishCard, FoodType } from "./dishCard";
 import { AddDishCard } from "./AddDishCard";
 import { CategoryType } from "./categoryFilter";
+import { apiUrl } from "@/lib/api";
 
 export const DishSection = ({
   category,
@@ -16,9 +17,7 @@ export const DishSection = ({
 
   const getFoods = async () => {
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/category/${category._id}`,
-      );
+      const response = await fetch(apiUrl(`/category/${category._id}`));
 
       if (!response.ok) {
         throw new Error("Food tatahad aldaa garlaa");
