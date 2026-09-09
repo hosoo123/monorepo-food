@@ -1,22 +1,42 @@
 "use client";
 
-import { useState } from "react";
-import { ShoppingCart, X } from "lucide-react";
-import { useCart } from "./cart-context";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import { Calendar, MapPin, ShoppingCart, X } from "lucide-react";
+import { toast } from "sonner";
+import { useCart, type PlacedOrder } from "./cart-context";
 import { FoodImage } from "./FoodImage";
+import { isLoggedIn } from "@/lib/auth";
 
 const SHIPPING_FEE = 0.99;
 
 interface OrderDetailSheetProps {
   isOpen: boolean;
   onClose: () => void;
+  onRequireLogin?: () => void;
 }
+
+const statusStyles: Record<PlacedOrder["status"], string> = {
+  PENDING: "bg-[#EF4444] text-white",
+  DELIVERED: "bg-[#E4E4E7] text-[#71717A]",
+  CANCELED: "bg-[#E4E4E7] text-[#71717A]",
+};
+
+const statusLabel: Record<PlacedOrder["status"], string> = {
+  PENDING: "Pending",
+  DELIVERED: "Delivered",
+  CANCELED: "Canceled",
+};
 
 export const OrderDetailSheet = ({
   isOpen,
   onClose,
+  onRequireLogin,
 }: OrderDetailSheetProps) => {
   const [activeTab, setActiveTab] = useState<"cart" | "order">("cart");
+  const [addressError, setAddressError] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const {
     items,
     updateQuantity,
@@ -24,11 +44,107 @@ export const OrderDetailSheet = ({
     itemsTotal,
     address,
     setAddress,
+    orders,
+    placeOrder,
   } = useCart();
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      setActiveTab("cart");
+    } else {
+      setShowSuccess(false);
+      setAddressError(false);
+    }
+  }, [isOpen]);
 
   const total = items.length === 0 ? 0 : itemsTotal + SHIPPING_FEE;
+
+  const handleCheckout = () => {
+    if (items.length === 0) {
+      toast.error("Сагс хоосон байна");
+      return;
+    }
+
+    if (!address.trim()) {
+      setAddressError(true);
+      toast.error("Please complete your address");
+      return;
+    }
+
+    setAddressError(false);
+
+    if (!isLoggedIn()) {
+      toast.error("Эхлээд нэвтэрнэ үү");
+      onRequireLogin?.();
+      return;
+    }
+
+    const order = placeOrder();
+    if (!order) {
+      toast.error("Захиалга үүсгэж чадсангүй");
+      return;
+    }
+
+    setShowSuccess(true);
+  };
+
+  const handleBackToHome = () => {
+    setShowSuccess(false);
+    setActiveTab("order");
+  };
+
+  const formatDate = (iso: string) => {
+    const date = new Date(iso);
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}/${m}/${d}`;
+  };
+
+  const successModal =
+    mounted &&
+    showSuccess &&
+    createPortal(
+      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="absolute inset-0 bg-black/60" onClick={handleBackToHome} />
+        <div className="relative bg-white rounded-2xl p-8 max-w-[420px] w-full shadow-2xl text-center flex flex-col items-center">
+          <button
+            type="button"
+            onClick={handleBackToHome}
+            className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center text-zinc-500 hover:bg-zinc-100 cursor-pointer"
+          >
+            <X className="w-4 h-4" />
+          </button>
+
+          <h2 className="text-xl font-semibold text-gray-900 mb-6 mt-2 px-4">
+            Your order has been successfully placed !
+          </h2>
+
+          <img
+            src="/icons/illustration.svg"
+            alt="Order success"
+            className="w-48 h-auto mb-8"
+          />
+
+          <button
+            type="button"
+            onClick={handleBackToHome}
+            className="w-full bg-[#F4F4F5] hover:bg-[#E4E4E7] text-zinc-900 font-medium py-3 rounded-full text-sm transition-colors cursor-pointer"
+          >
+            Back to home
+          </button>
+        </div>
+      </div>,
+      document.body,
+    );
+
+  if (!isOpen) {
+    return <>{successModal}</>;
+  }
 
   return (
     <>
@@ -159,45 +275,118 @@ export const OrderDetailSheet = ({
                 <input
                   type="text"
                   value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  placeholder="Please share your complete address"
-                  className="w-full h-12 rounded-lg border border-zinc-200 px-4 text-sm text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-zinc-400"
+                  onChange={(e) => {
+                    setAddress(e.target.value);
+                    if (e.target.value.trim()) setAddressError(false);
+                  }}
+                  placeholder="Please complete your address"
+                  className={`w-full h-12 rounded-lg border px-4 text-sm text-zinc-900 placeholder:text-zinc-400 outline-none ${
+                    addressError
+                      ? "border-[#EF4444] focus:border-[#EF4444]"
+                      : "border-zinc-200 focus:border-zinc-400"
+                  }`}
                 />
+                {addressError && (
+                  <p className="mt-2 text-sm text-[#EF4444]">
+                    Please complete your address
+                  </p>
+                )}
               </div>
             </div>
           )
         ) : (
-          <div className="bg-white rounded-2xl p-8 text-center text-gray-500 text-sm">
-            No active orders yet.
+          <div className="bg-white rounded-2xl p-4 text-zinc-900 flex-1 overflow-y-auto">
+            <h3 className="text-lg font-semibold text-zinc-700 mb-4">
+              Order history
+            </h3>
+
+            {orders.length === 0 ? (
+              <p className="text-sm text-gray-500 text-center py-10">
+                No orders yet.
+              </p>
+            ) : (
+              <div className="space-y-4">
+                {orders.map((order) => (
+                  <div
+                    key={order.id}
+                    className="border border-zinc-200 rounded-xl p-4 space-y-3"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="font-semibold text-zinc-900">
+                          ${order.totalPrice.toFixed(2)}
+                        </p>
+                        <p className="text-xs text-zinc-500 mt-0.5">
+                          #{order.id}
+                        </p>
+                      </div>
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${statusStyles[order.status]}`}
+                      >
+                        {statusLabel[order.status]}
+                      </span>
+                    </div>
+
+                    <div className="space-y-1">
+                      {order.items.map((item, index) => (
+                        <p
+                          key={`${order.id}-${item.name}-${index}`}
+                          className="text-sm text-zinc-700"
+                        >
+                          {item.name} x {item.quantity}
+                        </p>
+                      ))}
+                    </div>
+
+                    <div className="flex flex-col gap-1.5 text-xs text-zinc-500 pt-1 border-t border-dashed border-zinc-200">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-3.5 h-3.5 shrink-0" />
+                        <span>{formatDate(order.createdAt)}</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <MapPin className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                        <span className="line-clamp-2">{order.address}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
-        <div className="bg-white text-zinc-900 rounded-2xl p-5 space-y-3 mt-auto shrink-0">
-          <h4 className="font-semibold text-lg text-zinc-700">Payment info</h4>
-          <div className="flex justify-between text-sm text-zinc-500">
-            <span>Items</span>
-            <span className="font-medium text-zinc-900">
-              ${itemsTotal.toFixed(2)}
-            </span>
+        {activeTab === "cart" && (
+          <div className="bg-white text-zinc-900 rounded-2xl p-5 space-y-3 mt-auto shrink-0">
+            <h4 className="font-semibold text-lg text-zinc-700">Payment info</h4>
+            <div className="flex justify-between text-sm text-zinc-500">
+              <span>Items</span>
+              <span className="font-medium text-zinc-900">
+                {items.length === 0 ? "-" : `$${itemsTotal.toFixed(2)}`}
+              </span>
+            </div>
+            <div className="flex justify-between text-sm text-zinc-500">
+              <span>Shipping</span>
+              <span className="font-medium text-zinc-900">
+                {items.length === 0 ? "-" : `${SHIPPING_FEE}$`}
+              </span>
+            </div>
+            <div className="flex justify-between font-semibold text-base text-zinc-900 pt-3 border-t border-dashed border-zinc-200">
+              <span>Total</span>
+              <span>{items.length === 0 ? "-" : `$${total.toFixed(2)}`}</span>
+            </div>
+            <button
+              type="button"
+              disabled={items.length === 0}
+              onClick={handleCheckout}
+              className="w-full bg-[#EF4444] disabled:bg-[#EF4444]/40 text-white disabled:cursor-not-allowed cursor-pointer font-medium py-3.5 rounded-full mt-2 text-sm transition-colors"
+            >
+              Checkout
+            </button>
           </div>
-          <div className="flex justify-between text-sm text-zinc-500">
-            <span>Shipping</span>
-            <span className="font-medium text-zinc-900">
-              {items.length === 0 ? "-" : `${SHIPPING_FEE}$`}
-            </span>
-          </div>
-          <div className="flex justify-between font-semibold text-base text-zinc-900 pt-3 border-t border-dashed border-zinc-200">
-            <span>Total</span>
-            <span>{items.length === 0 ? "-" : `$${total.toFixed(2)}`}</span>
-          </div>
-          <button
-            disabled={items.length === 0}
-            className="w-full bg-[#EF4444] disabled:bg-[#EF4444]/40 text-white disabled:cursor-not-allowed cursor-pointer font-medium py-3.5 rounded-full mt-2 text-sm transition-colors"
-          >
-            Checkout
-          </button>
-        </div>
+        )}
       </div>
+
+      {successModal}
     </>
   );
 };

@@ -2,25 +2,20 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { SignUpSec1 } from "./_features/SignUpSec1";
+import { SignUpSec1, type SignUpFormData } from "./_features/SignUpSec1";
 import { SignUpSec2 } from "./_features/SignUpSec2";
 import Link from "next/link";
+
 export default function SignUpPage() {
   const [currentStep, setCurrentStep] = useState(1);
-  const [email, setEmail] = useState("");
+  const [formData, setFormData] = useState<SignUpFormData>({
+    email: "",
+  });
 
-  const handleNext = (emailValue?: string) => {
-    if (emailValue) setEmail(emailValue);
-    if (currentStep < 2) setCurrentStep(currentStep + 1);
+  const handleNext = (data: SignUpFormData) => {
+    setFormData(data);
+    setCurrentStep(2);
   };
-
-
-  // const handleSignUp = async () => {
-  //   const response = await fetch("/api/signup", {
-  //     method: "POST",
-  //     body: JSON.stringify({ email, password }),
-  //   });
-  // };
 
   return (
     <div className="flex h-screen w-full">
@@ -30,14 +25,13 @@ export default function SignUpPage() {
       >
         <div className="w-full pl-9.5 max-w-sm flex flex-col items-start ">
           <Link href="/">
-            {" "}
             <button className=" text-black border border-gray rounded-lg p-2.5 mb-8 cursor-pointer">
               {"<"}
             </button>
           </Link>
         </div>
         {currentStep === 1 && <SignUpSec1 handleNext={handleNext} />}
-        {currentStep === 2 && <SignUpSec2 />}
+        {currentStep === 2 && <SignUpSec2 formData={formData} />}
       </div>
       <div className="lg:w-1/2 relative hidden  lg:block">
         <Image

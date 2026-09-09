@@ -9,6 +9,7 @@ import { UserProfileModal } from "./UserProfileDropdown";
 
 export const Header = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
 
   return (
     <section className="w-full flex justify-center mx-auto">
@@ -41,13 +42,19 @@ export const Header = () => {
           >
             <ShoppingCart className="w-4 h-4 text-black" />
           </button>
-          <UserProfileModal isLoggedIn={false} />
+          <UserProfileModal
+            open={isLoginOpen}
+            onOpenChange={setIsLoginOpen}
+          />
         </div>
       </header>
 
       <OrderDetailSheet
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
+        onRequireLogin={() => {
+          setIsLoginOpen(true);
+        }}
       />
     </section>
   );

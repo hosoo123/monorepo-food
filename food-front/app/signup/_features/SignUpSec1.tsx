@@ -2,35 +2,41 @@
 
 import { useState } from "react";
 import Link from "next/link";
+
+export type SignUpFormData = {
+  email: string;
+};
+
 interface SignUpSec1Props {
-  handleNext: (email?: string) => void;
+  handleNext: (data: SignUpFormData) => void;
 }
+
 export const SignUpSec1 = ({ handleNext }: SignUpSec1Props) => {
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
 
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  const isFilled = email.length > 0;
+  const canContinue = email.trim().length > 0;
 
   const checkError = () => {
-    let IsValid = true;
-    if (email.length < 1) {
+    let isValid = true;
+
+    if (!email.trim()) {
       setEmailError("Имэйл хаягаа оруулна уу.");
-      IsValid = false;
-    } else if (emailRegex.test(email) == false) {
+      isValid = false;
+    } else if (!emailRegex.test(email)) {
       setEmailError("Invalid email. Use a format like example@email.com.");
-      IsValid = false;
+      isValid = false;
     } else {
       setEmailError("");
     }
-    return IsValid;
+
+    return isValid;
   };
 
   const handleClick = () => {
-    const validate = checkError();
-    if (validate == true) {
-      handleNext(email);
-    }
+    if (!canContinue || !checkError()) return;
+    handleNext({ email: email.trim() });
   };
 
   return (
@@ -63,9 +69,9 @@ export const SignUpSec1 = ({ handleNext }: SignUpSec1Props) => {
 
       <button
         onClick={handleClick}
-        disabled={!isFilled}
+        disabled={!canContinue}
         className={`h-11 w-full rounded-lg text-[14px] font-medium transition-colors ${
-          isFilled
+          canContinue
             ? "bg-[#121316] text-white cursor-pointer"
             : "bg-[#E4E4E7] text-[#A1A1AA] cursor-not-allowed"
         }`}

@@ -2,34 +2,64 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
+import { apiUrl } from "@/lib/api";
+
 interface ForgotSec1Props {
-  handleNext: (email?: string) => void;
+  handleNext: (email?: string, code?: string) => void;
 }
+
 export const ForgotSec1 = ({ handleNext }: ForgotSec1Props) => {
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   const isFilled = email.length > 0;
 
   const checkError = () => {
-    let IsValid = true;
+    let isValid = true;
     if (email.length < 1) {
       setEmailError("Имэйл хаягаа оруулна уу.");
-      IsValid = false;
-    } else if (emailRegex.test(email) == false) {
+      isValid = false;
+    } else if (!emailRegex.test(email)) {
       setEmailError("Invalid email. Use a format like example@email.com.");
-      IsValid = false;
+      isValid = false;
     } else {
       setEmailError("");
     }
-    return IsValid;
+    return isValid;
   };
 
-  const handleClick = () => {
-    const validate = checkError();
-    if (validate == true) {
-      handleNext(email);
+  const handleClick = async () => {
+    if (!checkError() || loading) return;
+
+    try {
+      setLoading(true);
+      const res = await fetch(apiUrl("/user/forgot-password"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.message || "Алдаа гарлаа");
+        return;
+      }
+
+      if (data.code) {
+        toast.success(`Баталгаажуулах код: ${data.code}`);
+      } else {
+        toast.success(data.message || "Код илгээгдлээ");
+      }
+
+      handleNext(email, data.code);
+    } catch {
+      toast.error("Алдаа гарлаа");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -63,14 +93,14 @@ export const ForgotSec1 = ({ handleNext }: ForgotSec1Props) => {
 
       <button
         onClick={handleClick}
-        disabled={!isFilled}
+        disabled={!isFilled || loading}
         className={`h-11 w-full rounded-lg text-[14px] font-medium transition-colors ${
-          isFilled
+          isFilled && !loading
             ? "bg-[#121316] text-white cursor-pointer"
             : "bg-[#E4E4E7] text-[#A1A1AA] cursor-not-allowed"
         }`}
       >
-        Send link
+        {loading ? "Sending..." : "Send link"}
       </button>
 
       <p className="text-center text-[13px] text-[#71717A]">

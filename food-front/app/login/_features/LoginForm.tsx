@@ -2,45 +2,79 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { apiUrl } from "@/lib/api";
+import { saveAuth } from "@/lib/auth";
 
 export const LoginForm = () => {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
   const isFilled = email.length > 0 && password.length > 0;
 
   const checkError = () => {
-    let IsValid = true;
+    let isValid = true;
 
     if (email.length < 1) {
       setEmailError("Имэйл хаягаа оруулна уу.");
-      IsValid = false;
-    } else if (emailRegex.test(email) == false) {
+      isValid = false;
+    } else if (!emailRegex.test(email) && email !== "admin") {
       setEmailError("Invalid email. Use a format like example@email.com.");
-      IsValid = false;
+      isValid = false;
     } else {
       setEmailError("");
     }
 
     if (password.length < 1) {
       setPasswordError("Нууц үгээ оруулна уу.");
-      IsValid = false;
+      isValid = false;
     } else {
       setPasswordError("");
     }
 
-    return IsValid;
+    return isValid;
   };
 
-  const handleClick = () => {
-    const validate = checkError();
-    if (validate == true) {
-      // TODO: login submit logic
+  const handleClick = async () => {
+    if (!checkError() || loading) return;
+
+    try {
+      setLoading(true);
+      const res = await fetch(apiUrl("/user/login"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.message || "Нэвтрэхэд алдаа гарлаа");
+        return;
+      }
+
+      saveAuth(data.token, {
+        _id: data.user._id,
+        name: data.user.name,
+        email: data.user.email,
+        role: data.user.role,
+        phoneNumber: data.user.phoneNumber,
+        address: data.user.address,
+      });
+
+      toast.success("Амжилттай нэвтэрлээ");
+      router.push("/");
+    } catch {
+      toast.error("Нэвтрэхэд алдаа гарлаа");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -100,14 +134,14 @@ export const LoginForm = () => {
 
       <button
         onClick={handleClick}
-        disabled={!isFilled}
+        disabled={!isFilled || loading}
         className={`h-11 w-full rounded-lg text-[14px] font-medium transition-colors ${
-          isFilled
+          isFilled && !loading
             ? "bg-[#121316] text-white cursor-pointer"
             : "bg-[#E4E4E7] text-[#A1A1AA] cursor-not-allowed"
         }`}
       >
-        Let's Go
+        {loading ? "Loading..." : "Let's Go"}
       </button>
 
       <p className="text-center text-[13px] text-[#71717A]">

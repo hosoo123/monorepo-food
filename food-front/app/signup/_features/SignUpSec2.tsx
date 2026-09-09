@@ -2,48 +2,86 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { apiUrl } from "@/lib/api";
+import type { SignUpFormData } from "./SignUpSec1";
 
-export const SignUpSec2 = () => {
+type SignUpSec2Props = {
+  formData: SignUpFormData;
+};
+
+export const SignUpSec2 = ({ formData }: SignUpSec2Props) => {
+  const router = useRouter();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [passwordError, setPasswordError] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
 
-  const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9]).{8,}$/;
-  const isFilled = password.length > 0 && confirmPassword.length > 0;
+  const canSubmit =
+    password.length >= 6 &&
+    confirmPassword.length >= 6 &&
+    password === confirmPassword;
 
   const checkError = () => {
-    let IsValid = true;
+    let isValid = true;
 
-    if (password.length < 1) {
-      setPasswordError("Нууц үгээ оруулна уу.");
-      IsValid = false;
-    } else if (passwordRegex.test(password) == false) {
-      setPasswordError("Weak password. Use numbers and symbols.");
-      IsValid = false;
+    if (password.length < 6) {
+      setPasswordError("Password must be at least 6 characters.");
+      isValid = false;
     } else {
       setPasswordError("");
     }
 
-    if (confirmPassword.length < 1) {
+    if (confirmPassword.length < 6) {
       setConfirmPasswordError("Confirm password хоосон байна.");
-      IsValid = false;
+      isValid = false;
     } else if (password !== confirmPassword) {
-      setConfirmPasswordError("Those password didn't match. Try again.");
-      IsValid = false;
+      setConfirmPasswordError("Passwords do not match");
+      isValid = false;
     } else {
       setConfirmPasswordError("");
     }
 
-    return IsValid;
+    return isValid;
   };
 
-  const handleClick = () => {
-    const validate = checkError();
-    if (validate == true) {
-      // TODO: sign up submit logic
+  const handleClick = async () => {
+    if (!checkError() || loading) return;
+
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const res = await fetch(apiUrl("/user"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          password,
+          role: "USER",
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        toast.error(data.message || "Failed to create account");
+        return;
+      }
+
+      toast.success("Account created successfully");
+      router.push("/login");
+    } catch {
+      toast.error("Failed to create account");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -105,14 +143,14 @@ export const SignUpSec2 = () => {
 
       <button
         onClick={handleClick}
-        disabled={!isFilled}
+        disabled={!canSubmit || loading}
         className={`h-11 w-full rounded-lg text-[14px] font-medium transition-colors ${
-          isFilled
+          canSubmit && !loading
             ? "bg-[#121316] text-white cursor-pointer"
             : "bg-[#E4E4E7] text-[#A1A1AA] cursor-not-allowed"
         }`}
       >
-        Let's Go
+        {loading ? "Loading..." : "Let's Go"}
       </button>
 
       <p className="text-center text-[13px] text-[#71717A]">

@@ -1,11 +1,21 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { apiUrl } from "@/lib/api";
 
-export const ForgotSec3 = () => {
+type ForgotSec3Props = {
+  email: string;
+  code: string;
+};
+
+export const ForgotSec3 = ({ email, code }: ForgotSec3Props) => {
+  const router = useRouter();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [passwordError, setPasswordError] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
@@ -14,37 +24,55 @@ export const ForgotSec3 = () => {
   const isFilled = password.length > 0 && confirmPassword.length > 0;
 
   const checkError = () => {
-    let IsValid = true;
+    let isValid = true;
 
     if (password.length < 1) {
       setPasswordError("Нууц үгээ оруулна уу.");
-      IsValid = false;
-    } else if (passwordRegex.test(password) == false) {
-      setPasswordError(
-        "Weak password. Use numbers and symbols.",
-      );
-      IsValid = false;
+      isValid = false;
+    } else if (!passwordRegex.test(password)) {
+      setPasswordError("Weak password. Use numbers and symbols.");
+      isValid = false;
     } else {
       setPasswordError("");
     }
 
     if (confirmPassword.length < 1) {
       setConfirmPasswordError("Confirm password хоосон байна.");
-      IsValid = false;
+      isValid = false;
     } else if (password !== confirmPassword) {
       setConfirmPasswordError("Those password didn't match. Try again.");
-      IsValid = false;
+      isValid = false;
     } else {
       setConfirmPasswordError("");
     }
 
-    return IsValid;
+    return isValid;
   };
 
-  const handleClick = () => {
-    const validate = checkError();
-    if (validate == true) {
-      // TODO: create password submit logic
+  const handleClick = async () => {
+    if (!checkError() || loading) return;
+
+    try {
+      setLoading(true);
+      const res = await fetch(apiUrl("/user/reset-password"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, code, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.message || "Нууц үг солиход алдаа гарлаа");
+        return;
+      }
+
+      toast.success("Нууц үг амжилттай шинэчлэгдлээ");
+      router.push("/login");
+    } catch {
+      toast.error("Нууц үг солиход алдаа гарлаа");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -107,14 +135,14 @@ export const ForgotSec3 = () => {
 
       <button
         onClick={handleClick}
-        disabled={!isFilled}
+        disabled={!isFilled || loading}
         className={`h-11 w-full rounded-lg text-[14px] font-medium transition-colors ${
-          isFilled
+          isFilled && !loading
             ? "bg-[#121316] text-white cursor-pointer"
             : "bg-[#E4E4E7] text-[#A1A1AA] cursor-not-allowed"
         }`}
       >
-        Create password
+        {loading ? "Saving..." : "Create password"}
       </button>
     </div>
   );
