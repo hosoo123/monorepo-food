@@ -8,6 +8,8 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { apiUrl } from "@/lib/api";
+import { getStoredUser } from "@/lib/auth";
 
 export type CartItem = {
   id: string;
@@ -24,7 +26,7 @@ export type PlacedOrder = {
   id: string;
   totalPrice: number;
   status: OrderStatus;
-  items: { name: string; quantity: number }[];
+  items: { name: string; quantity: number; image?: string }[];
   address: string;
   createdAt: string;
 };
@@ -39,7 +41,7 @@ type CartContextValue = {
   address: string;
   setAddress: (address: string) => void;
   orders: PlacedOrder[];
-  placeOrder: () => PlacedOrder | null;
+  placeOrder: () => Promise<PlacedOrder | null>;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -90,25 +92,58 @@ export function CartProvider({ children }: { children: ReactNode }) {
     [items],
   );
 
-  const placeOrder = useCallback(() => {
+  const placeOrder = useCallback(async () => {
     if (items.length === 0 || !address.trim()) return null;
 
-    const shipping = 0.99;
-    const order: PlacedOrder = {
-      id: String(Math.floor(10000 + Math.random() * 90000)),
-      totalPrice: itemsTotal + shipping,
-      status: "PENDING",
-      items: items.map((item) => ({
-        name: item.name,
-        quantity: item.quantity,
-      })),
-      address: address.trim(),
-      createdAt: new Date().toISOString(),
-    };
+    const user = getStoredUser();
+    if (!user?._id) return null;
 
-    setOrders((prev) => [order, ...prev]);
-    setItems([]);
-    return order;
+    const shipping = 0.99;
+    const totalPrice = itemsTotal + shipping;
+    const trimmedAddress = address.trim();
+
+    try {
+      const res = await fetch(apiUrl("/order"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user: user._id,
+          totalPrice,
+          foodOrderItems: items.map((item) => ({
+            food: item.id,
+            quantity: item.quantity,
+            foodName: item.name,
+            image: item.image,
+          })),
+          status: "PENDING",
+          address: trimmedAddress,
+        }),
+      });
+
+      if (!res.ok) return null;
+
+      const data = await res.json();
+      const created = data.order;
+
+      const order: PlacedOrder = {
+        id: created?._id ?? String(Math.floor(10000 + Math.random() * 90000)),
+        totalPrice,
+        status: "PENDING",
+        items: items.map((item) => ({
+          name: item.name,
+          quantity: item.quantity,
+          image: item.image,
+        })),
+        address: trimmedAddress,
+        createdAt: created?.createdAt ?? new Date().toISOString(),
+      };
+
+      setOrders((prev) => [order, ...prev]);
+      setItems([]);
+      return order;
+    } catch {
+      return null;
+    }
   }, [items, address, itemsTotal]);
 
   const value = useMemo(

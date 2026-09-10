@@ -7,7 +7,8 @@ export const createOrder = async (req, res) => {
     user: body.user,
     totalPrice: body.totalPrice,
     foodOrderItems: body.foodOrderItems,
-    status: body.status,
+    status: body.status || "PENDING",
+    address: body.address || "",
   });
   res.status(201).json({ message: "order amjillta uusle", order: newOrder });
 };

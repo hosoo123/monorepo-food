@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { userModel } from "../../models/user-model.js";
+import { createToken, toPublicUser } from "./auth-utils.js";
 
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;

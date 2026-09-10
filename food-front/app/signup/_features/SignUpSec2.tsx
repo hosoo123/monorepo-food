@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { apiUrl } from "@/lib/api";
+import { saveAuth } from "@/lib/auth";
 import type { SignUpFormData } from "./SignUpSec1";
 
 type SignUpSec2Props = {
@@ -60,7 +61,7 @@ export const SignUpSec2 = ({ formData }: SignUpSec2Props) => {
     try {
       setLoading(true);
 
-      const res = await fetch(apiUrl("/user"), {
+      const signupRes = await fetch(apiUrl("/user"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -70,14 +71,41 @@ export const SignUpSec2 = ({ formData }: SignUpSec2Props) => {
         }),
       });
 
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
+      if (!signupRes.ok) {
+        const data = await signupRes.json().catch(() => ({}));
         toast.error(data.message || "Failed to create account");
         return;
       }
 
-      toast.success("Account created successfully");
-      router.push("/login");
+      // Бүртгэлийн дараа шууд нэвтрүүлэх — хэрэглэгч дахин login хийхгүй
+      const loginRes = await fetch(apiUrl("/user/login"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          password,
+        }),
+      });
+
+      const loginData = await loginRes.json().catch(() => ({}));
+
+      if (!loginRes.ok || !loginData.token) {
+        toast.success("Account created. Please log in.");
+        router.push("/login");
+        return;
+      }
+
+      saveAuth(loginData.token, {
+        _id: loginData.user._id,
+        name: loginData.user.name,
+        email: loginData.user.email,
+        role: loginData.user.role,
+        phoneNumber: loginData.user.phoneNumber,
+        address: loginData.user.address,
+      });
+
+      toast.success("Account created. Welcome!");
+      router.push("/");
     } catch {
       toast.error("Failed to create account");
     } finally {

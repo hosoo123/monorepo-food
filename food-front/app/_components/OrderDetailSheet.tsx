@@ -83,13 +83,14 @@ export const OrderDetailSheet = ({
       return;
     }
 
-    const order = placeOrder();
-    if (!order) {
-      toast.error("Захиалга үүсгэж чадсангүй");
-      return;
-    }
-
-    setShowSuccess(true);
+    void (async () => {
+      const order = await placeOrder();
+      if (!order) {
+        toast.error("Захиалга үүсгэж чадсангүй");
+        return;
+      }
+      setShowSuccess(true);
+    })();
   };
 
   const handleBackToHome = () => {
